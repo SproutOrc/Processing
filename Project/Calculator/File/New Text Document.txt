@@ -1,0 +1,104 @@
+import processing.serial.*;
+
+//生成串口对象
+Serial myPort;
+PFont myFont;
+PImage myImage;
+// Calculator myCal = new Calculator();
+// Pushbutton myButton = new Pushbutton();
+
+void setup(){
+	size(800, 600);	//生成窗口大小800X600;
+	println(Serial.list());	//显示当前串口列表;
+	// myPort = new Serial(this, "COM4", 115200);	//初始化串口;
+	myFont = createFont("Consolas", 16, true);	//设置字体;
+	frameRate(30);	//设置帧数
+
+	myImage = loadImage("calculator.jpg");
+}
+
+void draw(){
+	image(myImage, 0, 0);
+	// rect (10, 10, 780, 150, 10);
+	// textFont (myFont);
+	// fill (12, 25, 16);
+	// textSize(16);
+	// text ( "var: " + myCal.add(1, 2), 10, 100);
+	// text ( "var: " + myCal.sub(1, 2), 10, 110);
+	// noFill();
+	// textSize(80);
+	// myButton.createPushbutton(10, 180, 100, 100, 10, "10");
+}
+
+public class Calculator
+{
+	
+	//--------------------------------------
+	//  CONSTRUCTOR
+	//--------------------------------------
+	public Calculator () {
+
+	}
+
+	public long add(long summand, long addend) {
+		return summand + addend;
+	}
+
+	public long sub(long  minuend, long subtrahend) {
+		return minuend - subtrahend;
+	}
+
+	public long mul(long multiplicand,long multiplier) {
+		return multiplicand * multiplier;
+	}
+
+	public long div(long dividend,long divisor) {
+		return dividend / divisor;
+	}
+}
+
+// public class Pushbutton
+// {
+	
+	//--------------------------------------
+	//  CONSTRUCTOR
+	//--------------------------------------
+	// public int PushbuttonX;
+	// public int PushbuttonY;
+	// public int PushbuttonWidth;
+	// public int PushbuttonHeight;
+
+	
+// 	public Pushbutton () {
+		
+// 	}
+// 	public void createPushbutton (
+// 		int PushbuttonX, 
+// 		int PushbuttonY, 
+// 		int PushbuttonWidth, 
+// 		int PushbuttonHeight, 
+// 		int PushbuttonrAdii,
+// 		String PushbuttonString
+// 		) 
+// 	{
+// 		// this.PushbuttonX      = PushbuttonX;
+// 		// this.PushbuttonY      = PushbuttonY;
+// 		// this.PushbuttonWidth  = PushbuttonWidth;
+// 		// this.PushbuttonHeight = PushbuttonHeight;
+// 		rect(
+// 			PushbuttonX, 
+// 			PushbuttonY, 
+// 			PushbuttonWidth, 
+// 			PushbuttonHeight, 
+// 			PushbuttonrAdii
+// 			);
+
+// 		textAlign(CENTER, CENTER);
+// 		text(
+// 			PushbuttonString, 
+// 			PushbuttonX + PushbuttonWidth / 2, 
+// 			PushbuttonY + PushbuttonHeight / 2 - 5
+// 			);
+// 		textAlign(LEFT);
+// 	}
+// }
