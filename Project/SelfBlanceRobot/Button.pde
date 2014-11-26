@@ -1,4 +1,4 @@
-public class Button extends PApplet{
+public class Button {
 
     public Button (int x, int y, int width, int hight) {
         this.x = x;
@@ -20,8 +20,14 @@ public class Button extends PApplet{
         this.pressed = false;
     }
 
-    public void showButton() {
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void showEllipseButton() {
+        smooth();
         ellipse(this.x, this.y, this.width, this.hight);
+
     }
 
     public boolean isPressed(int x, int y) {
@@ -30,10 +36,10 @@ public class Button extends PApplet{
     }
 
     private boolean pressed;
+    private String title;
 
     private int x;
     private int y;
     private int width;
     private int hight;
-
 }

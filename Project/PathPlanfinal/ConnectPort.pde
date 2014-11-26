@@ -3,10 +3,10 @@ import processing.serial.*;
 public class ConnectPort extends PApplet{
 
     public ConnectPort () {
-        carStateSerial = new Serial(this, "COM7", 57600);
-        obstacle1Serial = new Serial(this, "COM5", 4800);
+        carStateSerial = new Serial(this, "COM4", 57600);
+        obstacle1Serial = new Serial(this, "COM1", 4800);
         obstacle2Serial = new Serial(this, "COM11", 57600);
-        ledControlSerial = new Serial(this, "COM6", 9600);
+        ledControlSerial = new Serial(this, "COM15", 9600);
         
         obstacle1Num = 25;
         obstacle2Num = 25;
