@@ -1,14 +1,48 @@
+// 显示需要显示的波形
+
+// 创建一个波形对象，就是一个变量名
+// 
 Waveform angle;
 Waveform angleAx;
 Waveform gyro;
 Waveform leftSpeed;
 Waveform rightSpeed;
+///////////////////////////////////
+
 ConnectProtocol connect;
 
 void setup() {
     size(600, 600);
+    // 显示所有连接的串口
     println(Serial.list());
-15    angle = new Waveform(0, 0, width, 100);
+
+    // 配置单片机所使用的串口号
+    // COM4 -> 打开COM4口
+    // 115200 -> 波特率115200
+    connect = new ConnectProtocol("COM7", 115200);
+
+    // 配置波形显示的位置和范围
+    // 
+    // 窗口示意图
+    // ——————————————————————>x+
+    // |
+    // |
+    // |
+    // |
+    // |
+    // |
+    // |
+    // |
+    // |
+    // y+
+    // Waveform(0, 0, width, 100)
+    // 在x = 0, y = 0为起点，
+    // width个像素作为波形显示宽度
+    // 100个像素作为波形显示高度
+    angle = new Waveform(0, 0, width, 100);
+
+    // 波形显示的范围，
+    // 串口如果发的数据大于等于40，则波形在再高的位置
     angle.setRange(40, -40);
 
     angleAx = new Waveform(0, 100, width, 100);
@@ -28,21 +62,32 @@ void draw() {
     
     if (connect.available() > 0) {
         background(0);
+
+        // 浮点型字典
+        // 串口发送过来的数据会保存在a中，保存形式
+        // 如
+        // a 0.0
+        // b 0.0
+        // c 0.0
         FloatDict a = connect.getInFloatDict();
 
-        angle.add(a.get("kfAngle"));
-        angle.setZero(a.get("Setpoint"));
-        //println("setPoint = " + a.get("Setpoint"));
-        angleAx.add(a.get("angleAx"));
-        angleAx.setZero(a.get("setPoint"));
+        // 向波形添加数据
+        // 获取字符串为kfAngle的值的大小
+        // 这个kfAngle和单片机里面发送的值是一一对应的
+        angle.add(a.get("ax"));
+        // 设置波形的x轴
+        angle.setZero(0.0);
+        
+        angleAx.add(a.get("ay"));
+        angleAx.setZero(0.0);
 
-        gyro.add(a.get("GYRO"));
+        gyro.add(a.get("az"));
         gyro.setZero(0.0);
 
-        leftSpeed.add(a.get("leftSpeed"));
+        leftSpeed.add(a.get("gx"));
         leftSpeed.setZero(0.0);
 
-        rightSpeed.add(a.get("rightSpeed"));
+        rightSpeed.add(a.get("gy"));
         rightSpeed.setZero(0.0);
 
         angle.showByLine();
