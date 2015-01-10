@@ -1,3 +1,21 @@
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.serial.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class FreeIMU_cube extends PApplet {
+
 /**
 Visualize a cube which will assumes the orientation described
 in a quaternion coming from the serial port. 
@@ -27,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-import processing.serial.*;
+
 
 Serial myPort;  // Create object from Serial class
 
@@ -44,7 +62,7 @@ PFont font;
 final int VIEW_SIZE_X = 1024, VIEW_SIZE_Y = 768;
 
 
-void setup() 
+public void setup() 
 {
   size(VIEW_SIZE_X, VIEW_SIZE_Y, P3D);
   myPort = new Serial(this, serialPort, 115200);  
@@ -74,7 +92,7 @@ void setup()
 }
 
 
-float decodeFloat(String inString) {
+public float decodeFloat(String inString) {
   byte [] inData = new byte[4];
   
   if(inString.length() == 8) {
@@ -89,7 +107,7 @@ float decodeFloat(String inString) {
 }
 
 
-void readQ() {
+public void readQ() {
   if(myPort.available() >= 18) {
     String inputString = myPort.readStringUntil('\n');
     //print(inputString);
@@ -107,48 +125,48 @@ void readQ() {
 
 
 
-void buildBoxShape() {
+public void buildBoxShape() {
   //box(60, 10, 40);
   noStroke();
   beginShape(QUADS);
   
   //Z+ (to the drawing area)
-  fill(#00ff00);
+  fill(0xff00ff00);
   vertex(-30, -5, 20);
   vertex(30, -5, 20);
   vertex(30, 5, 20);
   vertex(-30, 5, 20);
   
   //Z-
-  fill(#0000ff);
+  fill(0xff0000ff);
   vertex(-30, -5, -20);
   vertex(30, -5, -20);
   vertex(30, 5, -20);
   vertex(-30, 5, -20);
   
   //X-
-  fill(#ff0000);
+  fill(0xffff0000);
   vertex(-30, -5, -20);
   vertex(-30, -5, 20);
   vertex(-30, 5, 20);
   vertex(-30, 5, -20);
   
   //X+
-  fill(#ffff00);
+  fill(0xffffff00);
   vertex(30, -5, -20);
   vertex(30, -5, 20);
   vertex(30, 5, 20);
   vertex(30, 5, -20);
   
   //Y-
-  fill(#ff00ff);
+  fill(0xffff00ff);
   vertex(-30, -5, -20);
   vertex(30, -5, -20);
   vertex(30, -5, 20);
   vertex(-30, -5, 20);
   
   //Y+
-  fill(#00ffff);
+  fill(0xff00ffff);
   vertex(-30, 5, -20);
   vertex(30, 5, -20);
   vertex(30, 5, 20);
@@ -158,7 +176,7 @@ void buildBoxShape() {
 }
 
 
-void drawCube() {  
+public void drawCube() {  
   pushMatrix();
     translate(VIEW_SIZE_X/2, VIEW_SIZE_Y/2 + 50, 0);
     scale(5,5,5);
@@ -175,9 +193,9 @@ void drawCube() {
 }
 
 
-void draw() {
-  background(#000000);
-  fill(#ffffff);
+public void draw() {
+  background(0xff000000);
+  fill(0xffffffff);
   
   readQ();
   
@@ -199,7 +217,7 @@ void draw() {
 }
 
 
-void keyPressed() {
+public void keyPressed() {
   if(key == 'h') {
     println("pressed h");
     
@@ -216,13 +234,13 @@ void keyPressed() {
 // See Sebastian O.H. Madwick report 
 // "An efficient orientation filter for inertial and intertial/magnetic sensor arrays" Chapter 2 Quaternion representation
 
-void quaternionToEuler(float [] q, float [] euler) {
+public void quaternionToEuler(float [] q, float [] euler) {
   euler[0] = atan2(2 * q[1] * q[2] - 2 * q[0] * q[3], 2 * q[0]*q[0] + 2 * q[1] * q[1] - 1); // psi
   euler[1] = -asin(2 * q[1] * q[3] + 2 * q[0] * q[2]); // theta
   euler[2] = atan2(2 * q[2] * q[3] - 2 * q[0] * q[1], 2 * q[0] * q[0] + 2 * q[3] * q[3] - 1); // phi
 }
 
-float [] quatProd(float [] a, float [] b) {
+public float [] quatProd(float [] a, float [] b) {
   float [] q = new float[4];
   
   q[0] = a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3];
@@ -234,10 +252,10 @@ float [] quatProd(float [] a, float [] b) {
 }
 
 // returns a quaternion from an axis angle representation
-float [] quatAxisAngle(float [] axis, float angle) {
+public float [] quatAxisAngle(float [] axis, float angle) {
   float [] q = new float[4];
   
-  float halfAngle = angle / 2.0;
+  float halfAngle = angle / 2.0f;
   float sinHalfAngle = sin(halfAngle);
   q[0] = cos(halfAngle);
   q[1] = -axis[0] * sinHalfAngle;
@@ -248,7 +266,7 @@ float [] quatAxisAngle(float [] axis, float angle) {
 }
 
 // return the quaternion conjugate of quat
-float [] quatConjugate(float [] quat) {
+public float [] quatConjugate(float [] quat) {
   float [] conj = new float[4];
   
   conj[0] = quat[0];
@@ -259,3 +277,12 @@ float [] quatConjugate(float [] quat) {
   return conj;
 }
 
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "FreeIMU_cube" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
+}

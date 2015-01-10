@@ -1,4 +1,24 @@
+import processing.core.*; 
+import processing.data.*; 
+import processing.event.*; 
+import processing.opengl.*; 
+
+import processing.serial.*; 
+
+import java.util.HashMap; 
+import java.util.ArrayList; 
+import java.io.File; 
+import java.io.BufferedReader; 
+import java.io.PrintWriter; 
+import java.io.InputStream; 
+import java.io.OutputStream; 
+import java.io.IOException; 
+
+public class FreeIMU_cube1 extends PApplet {
+
+
 /**
+
 Visualize a cube which will assumes the orientation described
 in a quaternion coming from the serial port. 
 
@@ -25,13 +45,26 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+****
+
+Edited by Antonio Hermida Vazquez Ago 2013
+This is a "little more graphic" version 
+After to see this gorgeus program I started to think how to see the real board.
+This is my contribution. 
+Of course anyone can put his own board to get the same result
+
+
+
+
 */
 
-import processing.serial.*;
+
 
 Serial myPort;  // Create object from Serial class
 
-final String serialPort = "COM7"; // replace this with your serial port. On windows you will need something like "COM1".
+//final String serialPort = "/dev/ttyUSB9"; // replace this with your serial port. On windows you will need something like "COM1".
+final String serialPort = "/dev/tty.usbmodem1d11"; // replace this with your serial port. On windows you will need something like "COM1".
+
 
 float [] q = new float [4];
 float [] hq = null;
@@ -41,32 +74,36 @@ int lf = 10; // 10 is '\n' in ASCII
 byte[] inBuffer = new byte[22]; // this is the number of chars on each line from the Arduino (including /r/n)
 
 PFont font;
-final int VIEW_SIZE_X = 1024, VIEW_SIZE_Y = 768;
+//final int VIEW_SIZE_X = 1024, VIEW_SIZE_Y = 768;
+final int VIEW_SIZE_X = 800, VIEW_SIZE_Y = 600;
+
+PImage topside,downside,frontside,rightside;
 
 
-void setup() 
+public void setup() 
 {
   size(VIEW_SIZE_X, VIEW_SIZE_Y, P3D);
+  textureMode(NORMAL);
+  fill(255);
+  stroke(color(44,48,32));
+  
+  
+  
   myPort = new Serial(this, serialPort, 115200);  
   
   // The font must be located in the sketch's "data" directory to load successfully
   font = loadFont("CourierNew36.vlw"); 
   
-  /*
-  float [] axis = new float[3];
-  axis[0] = 0.0;
-  axis[1] = 0.0;
-  axis[2] = 1.0;
-  float angle = PI/2.0;
   
-  hq = quatAxisAngle(axis, angle);
+  // Loading the textures to the cube
+  // The png files alow to put the board holes so can increase  realism 
   
-  hq = new float[4];
-  hq[0] = 0.0;
-  hq[1] = 0.0;
-  hq[2] = 0.0;
-  hq[3] = 1.0;
-  */
+  topside = loadImage("MPU6050 A.png");//Top Side
+  downside = loadImage("MPU6050 B.png");//Botm side
+  frontside = loadImage("MPU6050 E.png"); //Wide side
+  rightside = loadImage("MPU6050 F.png");// Narrow side
+  
+  
   
   delay(100);
   myPort.clear();
@@ -74,7 +111,7 @@ void setup()
 }
 
 
-float decodeFloat(String inString) {
+public float decodeFloat(String inString) {
   byte [] inData = new byte[4];
   
   if(inString.length() == 8) {
@@ -89,7 +126,7 @@ float decodeFloat(String inString) {
 }
 
 
-void readQ() {
+public void readQ() {
   if(myPort.available() >= 18) {
     String inputString = myPort.readStringUntil('\n');
     //print(inputString);
@@ -106,62 +143,89 @@ void readQ() {
 }
 
 
+/*
+From
+* Texture Cube
+* by Dave Bollinger.
+I only Added multiple sides textured. AHV Ago 2013
+*/
 
-void buildBoxShape() {
-  //box(60, 10, 40);
-  noStroke();
+public void topboard(PImage imag) {
   beginShape(QUADS);
-  
-  //Z+ (to the drawing area)
-  fill(#00ff00);
-  vertex(-30, -5, 20);
-  vertex(30, -5, 20);
-  vertex(30, 5, 20);
-  vertex(-30, 5, 20);
-  
-  //Z-
-  fill(#0000ff);
-  vertex(-30, -5, -20);
-  vertex(30, -5, -20);
-  vertex(30, 5, -20);
-  vertex(-30, 5, -20);
-  
-  //X-
-  fill(#ff0000);
-  vertex(-30, -5, -20);
-  vertex(-30, -5, 20);
-  vertex(-30, 5, 20);
-  vertex(-30, 5, -20);
-  
-  //X+
-  fill(#ffff00);
-  vertex(30, -5, -20);
-  vertex(30, -5, 20);
-  vertex(30, 5, 20);
-  vertex(30, 5, -20);
-  
-  //Y-
-  fill(#ff00ff);
-  vertex(-30, -5, -20);
-  vertex(30, -5, -20);
-  vertex(30, -5, 20);
-  vertex(-30, -5, 20);
-  
-  //Y+
-  fill(#00ffff);
-  vertex(-30, 5, -20);
-  vertex(30, 5, -20);
-  vertex(30, 5, 20);
-  vertex(-30, 5, 20);
-  
+  texture(imag);
+  // -Y "top" face
+  vertex(-20, -1, -15, 0, 0);
+  vertex( 20, -1, -15, 1, 0);
+  vertex( 20, -1,  15, 1, 1);
+  vertex(-20, -1,  15, 0, 1);
+
+  endShape();
+}
+
+public void botomboard(PImage imag) {
+  beginShape(QUADS);
+  texture(imag);
+
+  // +Y "bottom" face
+  vertex(-20,  1,  15, 0, 0);
+  vertex( 20,  1,  15, 1, 0);
+  vertex( 20,  1, -15, 1, 1);
+  vertex(-20,  1, -15, 0, 1);
+    
   endShape();
 }
 
 
-void drawCube() {  
+public void sideboarda(PImage imag) {
+  beginShape(QUADS);
+  texture(imag);
+
+  // +Z "front" face
+  vertex(-20, -1,  15, 0, 0);
+  vertex( 20, -1,  15, 1, 0);
+  vertex( 20,  1,  15, 1, 1);
+  vertex(-20,  1,  15, 0, 1);
+
+  // -Z "back" face
+  vertex( 20, -1, -15, 0, 0);
+  vertex(-20, -1, -15, 1, 0);
+  vertex(-20,  1, -15, 1, 1);
+  vertex( 20,  1, -15, 0, 1);
+
+
+  endShape();
+}
+
+public void sideboardb(PImage imag) {
+  beginShape(QUADS);
+  texture(imag);
+
+   // +X "right" face
+  vertex( 20, -1,  15, 0, 0);
+  vertex( 20, -1, -15, 1, 0);
+  vertex( 20,  1, -15, 1, 1);
+  vertex( 20,  1,  15, 0, 1);
+
+  // -X "left" face
+  vertex(-20, -1, -15, 0, 0);
+  vertex(-20, -1,  15, 1, 0);
+  vertex(-20,  1,  15, 1, 1);
+  vertex(-20,  1, -15, 0, 1);
+
+  endShape();
+}
+
+
+
+
+
+
+
+public void drawCube() {  
   pushMatrix();
     translate(VIEW_SIZE_X/2, VIEW_SIZE_Y/2 + 50, 0);
-    scale(5,5,5);
+    //scale(5,5,5);
+    scale(10);
     
     // a demonstration of the following is at 
     // http://www.varesano.net/blog/fabio/ahrs-sensor-fusion-orientation-filter-3d-graphical-rotating-cube
@@ -169,15 +233,20 @@ void drawCube() {
     rotateX(-Euler[1]);
     rotateY(-Euler[0]);
     
-    buildBoxShape();
+  
+    topboard(topside);
+    botomboard(downside);
+    sideboarda(frontside);
+    sideboardb(rightside);
+    
     
   popMatrix();
 }
 
 
-void draw() {
-  background(#000000);
-  fill(#ffffff);
+public void draw() {
+  background(0xff000000);
+  //fill(#ffffff);
   
   readQ();
   
@@ -199,7 +268,7 @@ void draw() {
 }
 
 
-void keyPressed() {
+public void keyPressed() {
   if(key == 'h') {
     println("pressed h");
     
@@ -216,13 +285,13 @@ void keyPressed() {
 // See Sebastian O.H. Madwick report 
 // "An efficient orientation filter for inertial and intertial/magnetic sensor arrays" Chapter 2 Quaternion representation
 
-void quaternionToEuler(float [] q, float [] euler) {
+public void quaternionToEuler(float [] q, float [] euler) {
   euler[0] = atan2(2 * q[1] * q[2] - 2 * q[0] * q[3], 2 * q[0]*q[0] + 2 * q[1] * q[1] - 1); // psi
   euler[1] = -asin(2 * q[1] * q[3] + 2 * q[0] * q[2]); // theta
   euler[2] = atan2(2 * q[2] * q[3] - 2 * q[0] * q[1], 2 * q[0] * q[0] + 2 * q[3] * q[3] - 1); // phi
 }
 
-float [] quatProd(float [] a, float [] b) {
+public float [] quatProd(float [] a, float [] b) {
   float [] q = new float[4];
   
   q[0] = a[0] * b[0] - a[1] * b[1] - a[2] * b[2] - a[3] * b[3];
@@ -234,10 +303,10 @@ float [] quatProd(float [] a, float [] b) {
 }
 
 // returns a quaternion from an axis angle representation
-float [] quatAxisAngle(float [] axis, float angle) {
+public float [] quatAxisAngle(float [] axis, float angle) {
   float [] q = new float[4];
   
-  float halfAngle = angle / 2.0;
+  float halfAngle = angle / 2.0f;
   float sinHalfAngle = sin(halfAngle);
   q[0] = cos(halfAngle);
   q[1] = -axis[0] * sinHalfAngle;
@@ -248,7 +317,7 @@ float [] quatAxisAngle(float [] axis, float angle) {
 }
 
 // return the quaternion conjugate of quat
-float [] quatConjugate(float [] quat) {
+public float [] quatConjugate(float [] quat) {
   float [] conj = new float[4];
   
   conj[0] = quat[0];
@@ -259,3 +328,12 @@ float [] quatConjugate(float [] quat) {
   return conj;
 }
 
+  static public void main(String[] passedArgs) {
+    String[] appletArgs = new String[] { "FreeIMU_cube1" };
+    if (passedArgs != null) {
+      PApplet.main(concat(appletArgs, passedArgs));
+    } else {
+      PApplet.main(appletArgs);
+    }
+  }
+}

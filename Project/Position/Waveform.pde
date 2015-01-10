@@ -13,6 +13,8 @@ public class Waveform{
 
         INMAX = this.hight / 2.0;
         INMIN = -INMAX;
+
+        zeroPoint = 0.0;
     }
 
     public void add(float inValue) {

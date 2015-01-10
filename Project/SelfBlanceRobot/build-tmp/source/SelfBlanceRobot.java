@@ -37,7 +37,7 @@ public void setup() {
     // \u914d\u7f6e\u5355\u7247\u673a\u6240\u4f7f\u7528\u7684\u4e32\u53e3\u53f7
     // COM4 -> \u6253\u5f00COM4\u53e3
     // 115200 -> \u6ce2\u7279\u7387115200
-    connect = new ConnectProtocol("COM7", 115200);
+    connect = new ConnectProtocol("COM4", 115200);
 
     // \u914d\u7f6e\u6ce2\u5f62\u663e\u793a\u7684\u4f4d\u7f6e\u548c\u8303\u56f4
     // 
@@ -61,13 +61,13 @@ public void setup() {
 
     // \u6ce2\u5f62\u663e\u793a\u7684\u8303\u56f4\uff0c
     // \u4e32\u53e3\u5982\u679c\u53d1\u7684\u6570\u636e\u5927\u4e8e\u7b49\u4e8e40\uff0c\u5219\u6ce2\u5f62\u5728\u518d\u9ad8\u7684\u4f4d\u7f6e
-    angle.setRange(40, -40);
+    angle.setRange(20, -20);
 
     angleAx = new Waveform(0, 100, width, 100);
-    angleAx.setRange(40, -40);
+    angleAx.setRange(20, -20);
 
     gyro = new Waveform(0, 200, width, 100);
-    gyro.setRange(200, -200);
+    gyro.setRange(20, -20);
 
     leftSpeed = new Waveform(0, 300, width, 100);
     leftSpeed.setRange(400, -400);
@@ -92,14 +92,14 @@ public void draw() {
         // \u5411\u6ce2\u5f62\u6dfb\u52a0\u6570\u636e
         // \u83b7\u53d6\u5b57\u7b26\u4e32\u4e3akfAngle\u7684\u503c\u7684\u5927\u5c0f
         // \u8fd9\u4e2akfAngle\u548c\u5355\u7247\u673a\u91cc\u9762\u53d1\u9001\u7684\u503c\u662f\u4e00\u4e00\u5bf9\u5e94\u7684
-        angle.add(a.get("ax"));
+        angle.add(a.get("x"));
         // \u8bbe\u7f6e\u6ce2\u5f62\u7684x\u8f74
         angle.setZero(0.0f);
         
-        angleAx.add(a.get("ay"));
+        angleAx.add(a.get("y"));
         angleAx.setZero(0.0f);
 
-        gyro.add(a.get("az"));
+        gyro.add(a.get("z"));
         gyro.setZero(0.0f);
 
         leftSpeed.add(a.get("gx"));

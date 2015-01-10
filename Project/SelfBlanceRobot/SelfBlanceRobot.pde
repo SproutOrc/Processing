@@ -7,6 +7,7 @@ Waveform angleAx;
 Waveform gyro;
 Waveform leftSpeed;
 Waveform rightSpeed;
+Waveform acc;
 ///////////////////////////////////
 
 ConnectProtocol connect;
@@ -19,7 +20,7 @@ void setup() {
     // 配置单片机所使用的串口号
     // COM4 -> 打开COM4口
     // 115200 -> 波特率115200
-    connect = new ConnectProtocol("COM7", 115200);
+    connect = new ConnectProtocol("COM4", 115200);
 
     // 配置波形显示的位置和范围
     // 
@@ -43,19 +44,24 @@ void setup() {
 
     // 波形显示的范围，
     // 串口如果发的数据大于等于40，则波形在再高的位置
-    angle.setRange(40, -40);
+    angle.setRange(5, -5);
 
     angleAx = new Waveform(0, 100, width, 100);
-    angleAx.setRange(40, -40);
+    angleAx.setRange(5, -5);
 
     gyro = new Waveform(0, 200, width, 100);
-    gyro.setRange(200, -200);
+    gyro.setRange(5, -5);
 
     leftSpeed = new Waveform(0, 300, width, 100);
-    leftSpeed.setRange(400, -400);
+    leftSpeed.setRange(5, -5);
 
     rightSpeed = new Waveform(0, 400, width, 100);
-    rightSpeed.setRange(400, -400);
+    rightSpeed.setRange(5, -5);
+    
+    acc = new Waveform(0, 500, width, 100);
+    acc.setRange(5, -5);
+    
+    frameRate(60);
 }
 
 void draw() {
@@ -74,27 +80,31 @@ void draw() {
         // 向波形添加数据
         // 获取字符串为kfAngle的值的大小
         // 这个kfAngle和单片机里面发送的值是一一对应的
-        angle.add(a.get("ax"));
+        angle.add(a.get("x"));
         // 设置波形的x轴
         angle.setZero(0.0);
         
-        angleAx.add(a.get("ay"));
+        angleAx.add(a.get("y"));
         angleAx.setZero(0.0);
 
-        gyro.add(a.get("az"));
+        gyro.add(a.get("z"));
         gyro.setZero(0.0);
 
-        leftSpeed.add(a.get("gx"));
+        leftSpeed.add(a.get("ax"));
         leftSpeed.setZero(0.0);
 
-        rightSpeed.add(a.get("gy"));
+        rightSpeed.add(a.get("ay"));
         rightSpeed.setZero(0.0);
+        
+        acc.add(a.get("az"));
+        acc.setZero(0.0);
 
         angle.showByLine();
         angleAx.showByLine();
         gyro.showByLine();
         leftSpeed.showByLine();
         rightSpeed.showByLine();
+        acc.showByLine();
 
         // println("leftSpeed = " + a.get("leftSpeed"));
         // println("rightSpeed = " + a.get("rightSpeed"));
